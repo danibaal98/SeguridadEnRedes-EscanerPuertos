@@ -74,33 +74,34 @@ def tcp_packet2(tcp_dest, tcp_check):
     return pack('!HHLLBBH', tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags, tcp_window) + pack('H', tcp_check) + pack('H', tcp_urg_ptr)
     
 
-source_ip = '192.168.1.43'
-dest_ip = '192.168.1.1'
+if __name__ == 'main':
+    source_ip = '192.168.1.43'
+    dest_ip = '192.168.1.1'
 
-user_data = 'Hello, how are you'
+    user_data = 'Hello, how are you'
 
-ports = 500
+    ports = 500
 
-for port in range(ports):
-    ip_header = ip_packet()
-    tcp_header = tcp_packet(port)
+    for port in range(ports):
+        ip_header = ip_packet()
+        tcp_header = tcp_packet(port)
 
-    source_address = socket.inet_aton(source_ip)
-    dest_address = socket.inet_aton(dest_ip)
-    placeholder = 0
-    protocol = socket.IPPROTO_TCP
-    tcp_length = len(tcp_header) + len(user_data.encode('utf-8'))
+        source_address = socket.inet_aton(source_ip)
+        dest_address = socket.inet_aton(dest_ip)
+        placeholder = 0
+        protocol = socket.IPPROTO_TCP
+        tcp_length = len(tcp_header) + len(user_data.encode('utf-8'))
 
-    psh = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
-    psh = psh + tcp_header + user_data.encode('utf-8')
+        psh = pack('!4s4sBBH', source_address, dest_address, placeholder, protocol, tcp_length)
+        psh = psh + tcp_header + user_data.encode('utf-8')
 
-    tcp_check = checksum(psh)
+        tcp_check = checksum(psh)
 
-    tcp_header = tcp_packet2(port, tcp_check)
+        tcp_header = tcp_packet2(port, tcp_check)
 
-    packet = ip_header + tcp_header + user_data.encode('utf-8')
+        packet = ip_header + tcp_header + user_data.encode('utf-8')
 
-    s.sendto(packet, (dest_ip, 0))
-    msg = s.recv(2048)
-    print(msg)
-s.close()
+        s.sendto(packet, (dest_ip, 0))
+        msg = s.recv(2048)
+        print(msg)
+    s.close()
