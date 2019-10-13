@@ -74,7 +74,7 @@ def tcp_packet2(tcp_dest, tcp_check):
     return pack('!HHLLBBH', tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags, tcp_window) + pack('H', tcp_check) + pack('H', tcp_urg_ptr)
     
 
-if __name__ == 'main':
+if __name__ == '__main__':
     source_ip = '192.168.1.43'
     dest_ip = '192.168.1.1'
 
